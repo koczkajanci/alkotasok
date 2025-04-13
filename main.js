@@ -19,7 +19,7 @@ const tableElement = document.createElement('table') // Letrehozunk egy table el
  const headerRow = document.createElement('tr') // Letrehozunk egy tr elemet
  tableHeader.appendChild(headerRow) // Hozzaadjuk a theadhez
  const headerCells = ['Szerzo', 'mufaj', 'cim'] // A fejlec cellainak tartalma
- for (const cellText of headerCells) {
+ for (const cellText of headerCells) { //Vegigmegyunk a headerCells tombon
      const headerCell = document.createElement('th') // Letrehozunk egy th elemet
     headerCell.innerText = cellText // Beallitjuk a cella szoveget
     headerRow.appendChild(headerCell) // Hozzaadjuk a sorhoz
