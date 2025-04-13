@@ -63,6 +63,30 @@ const formButtonElement = document.createElement('button') //Letrehozzuk a formB
 formButtonElement.textContent = 'hozzáadás'; //Beallitjuk a gomb szoveget
 formElement.appendChild(formButtonElement) //Hozzaadjuk a formhoz a gombot
 
+formElement.addEventListener('submit', (e)=> { //Hozzaadunk egy addEventListenert a formhoz ami a submit esemenyre figyel
+    e.preventDefault(); //Megakadalyozzuk az alapertelmezett viselkedest
+    const valueObject = {}; //Letrehozzuk a valueObjectet ami egy ures objektum 
+    const inputFields = e.target.querySelectorAll('input'); //Kivalasztjuk az osszes input elemet a formban
+    for(const inputField of inputFields) { //Vegigmegyunk az input elemeket tartalmazo tombon
+        valueObject[inputField.id] = inputField.value; //Beallitjuk az objektum kulcsait es ertekeit
+    }
+    array.push(valueObject); //Hozzaadjuk az arrayhoz az objektumot
+    const tbodyRow = document.createElement('tr'); //Letrehozzuk a tbodyRowt ami egy tr
+    tableBody.appendChild(tbodyRow); //Hozzaadjuk a tbodyhoz a tbodyRowt
+
+    const writerCell = document.createElement('td'); //Letrehozzuk a writerCellt ami egy td
+    writerCell.textContent = valueObject.writer; //Beallitjuk a cella szoveget
+    tbodyRow.appendChild(writerCell); //Hozzaadjuk a tbodyRowhoz a writerCellt
+    
+    const genreCell = document.createElement('td'); //Letrehozzuk a genreCellt ami egy td
+    genreCell.textContent = valueObject.genre; //Beallitjuk a cella szoveget
+    tbodyRow.appendChild(genreCell); //Hozzaadjuk a tbodyRowhoz a genreCellt
+
+    const titleCell = document.createElement('td'); //Letrehozzuk a titleCellt ami egy td
+    titleCell.textContent = valueObject.title; //Beallitjuk a cella szoveget
+    tableBody.appendChild(titleCell); //Hozzaadjuk a tbodyRowhoz a titleCellt
+
+})
 
 containerDiv.appendChild(tableDiv);//Hozzaadjuk a containerDivhez a tableDivet
 containerDiv.appendChild(formDiv);//Hozzaadjuk a containerDivhez a formDivet
