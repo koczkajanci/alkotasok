@@ -1,3 +1,4 @@
+const array = [] //Letrehozzuk az arrayt ami egy ures tomb
 /**
  * 
  * @param {string} className Az osztaly neve ami stringet var
@@ -84,7 +85,7 @@ formElement.addEventListener('submit', (e)=> { //Hozzaadunk egy addEventListener
 
     const titleCell = document.createElement('td'); //Letrehozzuk a titleCellt ami egy td
     titleCell.textContent = valueObject.title; //Beallitjuk a cella szoveget
-    tableBody.appendChild(titleCell); //Hozzaadjuk a tbodyRowhoz a titleCellt
+    tbodyRow.appendChild(titleCell); //Hozzaadjuk a tbodyRowhoz a titleCellt
 
 })
 
