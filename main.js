@@ -29,5 +29,40 @@ const tableElement = document.createElement('table') // Letrehozunk egy table el
 
 const formDiv = divMaker('form');//formDiv letrehozasa a divMakerrel
 
+
+
+const formElement = document.createElement('form') // Letrehozunk egy form elemet
+formDiv.appendChild(formElement) // Hozzaadjuk a formDivhez
+const fieldElements = [{//Letrehozzuk a fieldElements tombot
+    id: 'writer', // Elso mezo idje
+    label: 'Szerzo', // Elso mezo labelje
+},
+{
+    id: 'genre', // Masodik mezo idje
+    label: 'mufaj', // Masodik mezo labelje
+}, 
+{
+    id: 'title', // Harmadik mezo idje
+    label: 'cim', // Harmadik mezo labelje
+}] 
+
+for(const element of fieldElements){ //Vegigmegyunk a fieldElements tombon az element valtozoval
+    const field = divMaker('field'); //Letrehozzuk a field valtozot ami a divMakerrel keszul
+    formElement.appendChild(field); //Hozzaadjuk a formhoz a fieldet
+    const label = document.createElement('label'); //Letrehozzuk egy label elemet
+    label.htmlFor =  element.id; //Beallitjuk a label htmlForjat az element idjere
+    label.textContent = element.label; //Beallitjuk a label szoveget az element labeljere
+    field.appendChild(label); //Hozzaadjuk a fieldhez a labelt
+    const input = document.createElement('input'); //Letrehozzuk egy input elemet
+    input.id = element.id; //Beallitjuk az input idjet az element idjere
+    field.appendChild(document.createElement('br')) //Hozzaadunk egy sortorest a fieldhez
+    field.appendChild(input); //Hozzaadjuk a fieldhez az inputot
+}   
+
+const formButtonElement = document.createElement('button') //Letrehozzuk a formButtonElementet ami egy button
+formButtonElement.textContent = 'hozzáadás'; //Beallitjuk a gomb szoveget
+formElement.appendChild(formButtonElement) //Hozzaadjuk a formhoz a gombot
+
+
 containerDiv.appendChild(tableDiv);//Hozzaadjuk a containerDivhez a tableDivet
 containerDiv.appendChild(formDiv);//Hozzaadjuk a containerDivhez a formDivet
