@@ -76,15 +76,14 @@ formElement.addEventListener('submit', (e)=> { //Hozzaadunk egy addEventListener
     let valid = true; //Letrehozunk egy valid valtozot ami true
     for(const element of inputFields) { //Vegigmegyunk az input elemeket tartalmazo tombon
         const error = element.parentElement.querySelector('.error') //Megkeressuk az error elemet
-        if(!error){
+        if(!error){ //Akkor megy bele az ifbe ha nincs error
             console.error('Nincs error elem a mezoben') //Ha nincs error akkor kiirjuk a konzolra
             return; //Visszaterunk
         }
         error.textContent = ''; //Beallitjuk az error szoveget uresre
-        if(element.value === ''){
+        if(element.value === ''){ //Akkor megy bele az ifbe ha az input valueja ures
             error.textContent = 'Kotelezo megadni' //Beallitjuk az error szoveget
             valid = false; //Beallitjuk a valid valtozot falsera
-
         }
         valueObject[element.id] = element.value; //Beallitjuk az objektum kulcsait es ertekeit
     }

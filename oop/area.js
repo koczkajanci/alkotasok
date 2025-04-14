@@ -111,6 +111,8 @@ class Table extends Area{
  * Ez az ostaly az Area osztalybol szarmazik es letrehoz egy űrlapot mezokkel es egy gombbal 
  */
 class Form extends Area{
+
+    #formFieldTomb; 
     /**
      * Ez a konstruktor létrehoz egy űrlapot mezőkkel és hozzáadja a szülő div elemhez.
      * @param {string} className A div osztalyneve ami stringet var
@@ -119,20 +121,14 @@ class Form extends Area{
      */
     constructor(className,fieldElements, manager){// //Konstruktor letrehozasa
         super(className,manager);//Meghivjuk a szulo osztaly konstruktorat
+        this.#formFieldTomb = []; //Letrehozunk egy privat tombot ami meg ures
         const formElement = document.createElement('form'); // Letrehozunk egy form elemet
         this.div.appendChild(formElement); // Hozzaadjuk a divhez
         
         for(const element of fieldElements){ //Vegigmegyunk a fieldElements tombon az element valtozoval
-            const field = document.createElement('div'); // Letrehozunk egy div elemet a mezokhoz
-            formElement.appendChild(field); // Hozzaadjuk a formhoz a fieldet
-            const label = document.createElement('label'); // Letrehozunk egy label elemet
-            label.htmlFor = element.id; // Beallitjuk a label htmlForjat az element idjere
-            label.textContent = element.label; // Beallitjuk a label szoveget az element labeljere
-            field.appendChild(label); // Hozzaadjuk a fieldhez a labelt
-            const input = document.createElement('input'); // Letrehozunk egy input elemet
-            input.id = element.id; // Beallitjuk az input idjet az element idjere
-            field.appendChild(document.createElement('br')); // Hozzaadunk egy sortorest a fieldhez
-            field.appendChild(input); // Hozzaadjuk a fieldhez az inputot
+            const formInputField = new FormInputField(element.id, element.label); //Letrehozzuk a formInputFieldet az element idjaval es labeljevel
+            this.#formFieldTomb.push(formInputField); //Hozzaadjuk a formInputFieldet a #formFieldTombhoz
+            formElement.appendChild(formInputField.divGetter()); //Hozzaadjuk a formhoz a formInputFieldet
         }   
 
         const button = document.createElement('button'); //Letrehozzuk a gombot
@@ -152,3 +148,64 @@ class Form extends Area{
 
     }
 }   
+
+/**
+ * Ez az osztaly az urlapnak a mezoit reprezentalja amik tartalmaznak egy labelt, egy inputot es egy error elemet
+ */
+class FormInputField{
+    #id; //Privat valtozo az idnek
+    #inputElem;//Privat valtozo az input elementnek
+    #labelElem; //Privat valtozo a label elementnek
+    #errorElem;//Privat valtozo az error elementnek
+    /**
+     * Visszaadja az input idjet
+     * @returns {string} A mezo idje
+     */
+    get id(){ //Getter az id privat valtozora
+        return this.#id; //Visszater az idvel
+    }
+    /**
+     * Visszaadja az input fieldjenek az erteket
+     * @returns  {string} A field erteke
+     */
+    get value(){ //Getter az input privat valtozojara
+        return this.#inputElem.value; //Visszater az input ertekevel
+    }
+    /**
+     * Ez egy setter ami az errorElem szoveget a parameterre
+     * @param {string} value Az ertek amit megkell jeleniteni 
+     */
+    set error(value){ //Setter az error privat valtozora
+        this.errorElem.textContent = value; //Beallitjuk az error szoveget
+    }
+    /**
+     * Letrehoz egy FormInputField objektumot a megadott adatokkal
+     * @param {string} id Az input idje
+     * @param {string} labContent A label szovege
+     */
+    constructor(id, labContent){ //Konstruktor letrehozasa
+        this.#id = id; //Beallitjuk az id privat valtozot a parameterre
+        this.#labelElem = document.createElement('label'); //Letrehozzuk a label elemet
+        this.#labelElem.htmlFor = id; //Beallitjuk a label htmlForjat az idre
+        this.#labelElem.textContent = labContent; //Beallitjuk a label szoveget a parameterre
+        this.#inputElem = document.createElement('input'); //Letrehozzuk az input elemet
+        this.#inputElem.id = id; //Beallitjuk az input idjet a parameterre
+        this.#errorElem = document.createElement('span'); //Letrehozzuk az error elemet ami egy span    
+        this.#errorElem.className = 'error'; //Beallitjuk az error osztalynevet errorra
+    }
+    /**
+     *  Ez a fuggveny letrehoz egy div element es hozzaadja a mezohoz valo HTML elemeket amik a label, input es error
+     * @returns {HTMLDivElement} Visszater a div elemmel ami HTMLDivElement tipusu
+     */
+    divGetter(){ //Letrehozzuk a fuggvenyt parameter nelkul
+        const div = divMaker('field'); //Letrehozzuk a divet a divMakerrel
+        const br1 = document.createElement('br'); //Letrehozzuk az elso sortorest
+        const br2 = document.createElement('br'); //Letrehozzuk a masodik sortorest
+        const inHTMLElem = [this.#labelElem, br1, this.#inputElem, 
+    br2, this.#errorElem]; //Letrehozzuk a tombot amiben benne van a label, input, error elem es meg 2 sortores
+        for(const elem of inHTMLElem){ //Vegigmegyunk az inHTMLElem tombon az elem valtozoval
+            div.appendChild(elem); //Hozzaadjuk a divhez az elemet
+        }
+        return div; //Visszater a divvel
+    }
+}
