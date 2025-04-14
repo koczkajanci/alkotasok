@@ -112,3 +112,41 @@ formElement.addEventListener('submit', (e)=> { //Hozzaadunk egy addEventListener
 
 containerDiv.appendChild(tableDiv);//Hozzaadjuk a containerDivhez a tableDivet
 containerDiv.appendChild(formDiv);//Hozzaadjuk a containerDivhez a formDivet
+
+const fileBemenet = document.createElement('input') //Letrehozzuk a fileBemenetet ami egy input
+containerDiv.appendChild(fileBemenet) //Hozzaadjuk a containerDivhez a fileBemenetet
+fileBemenet.id = 'filebemenet'; //Beallitjuk a fileBemenet idjet filebemenetre
+fileBemenet.type = 'file'; //Beallitjuk a fileBemenet tipusat filera
+fileBemenet.addEventListener('change', (e) => { ////Hozzaadunk egy addEventListenert a fileBemenethez ami a change esemenyre figyel
+    const fajl = e.target.files[0]; //Kivalasztjuk a fajlt
+    const fileReader = new FileReader(); //Letrehozzuk a fileReadert ami egy FileReader objektum
+    fileReader.onload = () => { //Hozzaadunk egy onload esemenyt a fileReaderhez ami akkor fut le ha a fajl beolvadasa megtortent
+        const fajlLines = fileReader.result.split('\n'); //Beolvassuk a fajlt es elvalasztjuk a sorokat 
+        const removedHeadLines = fajlLines.slice(1); //Eltavolitjuk az elso sort a fajlbol
+        for(const sor of removedHeadLines){//Vegigmegyunk a removedHeadLines tombon a sorral
+            const trimmedSor = sor.trim(); //Letrehozzuk a trimmedSort ami eltavolitja a sor elejen es vegen levo whitespaceket
+            const mezok = trimmedSor.split(';'); //Beallitjuk a mezoket ami a sort elvalasztja az elemeket ;-vel
+            const person = { //Letrehozzuk a person objektumot amibe beallitjuk hogy melyik split milyen erteket kap
+                writer: mezok[0], //Beallitjuk a person writerjet
+                genre: mezok[2], //Beallitjuk a person genrejat
+                title: mezok[1] //Beallitjuk a person titlejat
+            }   
+            array.push(person); //Hozzaadjuk az arrayhoz a person objektumot
+            const tbodyRow = document.createElement('tr'); //Letrehozzuk a tbodyRowt ami egy tr
+            tableBody.appendChild(tbodyRow); //Hozzaadjuk a tbodyhoz a tbodyRowt
+
+            const writerCell = document.createElement('td'); //Letrehozzuk a writerCellt ami egy td
+            writerCell.textContent = person.writer; //Beallitjuk a cella szoveget
+            tbodyRow.appendChild(writerCell); //Hozzaadjuk a tbodyRowhoz a writerCellt
+
+            const genreCell = document.createElement('td'); //Letrehozzuk a genreCellt ami egy td
+            genreCell.textContent = person.genre; //Beallitjuk a cella szoveget
+            tbodyRow.appendChild(genreCell); //Hozzaadjuk a tbodyRowhoz a genreCellt
+
+            const titleCell = document.createElement('td'); //Letrehozzuk a titleCellt ami egy td
+            titleCell.textContent = person.title; //Beallitjuk a cella szoveget
+            tbodyRow.appendChild(titleCell); //Hozzaadjuk a tbodyRowhoz a titleCellt
+        }
+    }
+    fileReader.readAsText(fajl); //Beolvassuk a fajlt
+})
