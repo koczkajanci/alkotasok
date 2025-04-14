@@ -150,3 +150,20 @@ fileBemenet.addEventListener('change', (e) => { ////Hozzaadunk egy addEventListe
     }
     fileReader.readAsText(fajl); //Beolvassuk a fajlt
 })
+
+const exportGomb = document.createElement('button') //Letrehozzuk az exportGombot ami a letoltesnek a gombja 
+exportGomb.textContent = 'Letoltes'; //Beallitjuk a gomb szoveget
+containerDiv.appendChild(exportGomb)// //Hozzaadjuk a containerDivhez az exportGombot
+exportGomb.addEventListener('click', () => {  //Hozzaadunk egy esemenyfigyelot az exportGombhoz 
+    const link = document.createElement('a'); //Letrehozzuk a linket ami egy <a> elem
+    const fileContent = ['writer;genre;title']; //Letrehozzuk a fajl fejlecet
+    for(const person of array) {  //Vegigmegyunk az array tombon a person valtozoval
+        fileContent.push(`${person.writer};${person.genre};${person.title}`);  //Hozzaadjuk a person adatait a fajlhoz
+    }
+    const content = fileContent.join('\n'); //Osszefuzzuk a sorokat az \n-el
+    const fajl = new Blob([content]); //Letrehozunk egy Blob objektumot a fajl tartalmaval
+    link.href = URL.createObjectURL(fajl); //Letrehozzuk a fajl URL-jet
+    link.download = 'newdata.csv'; //Beallitjuk a letoltesi nevet
+    link.click(); //Ramegyunk a linkre
+    URL.revokeObjectURL(link.href);//Eltavolitjuk a letrehozott URL-t
+})
