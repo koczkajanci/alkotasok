@@ -155,7 +155,42 @@ class Form extends Area{
         })
 
     }
-}   
+}
+/**
+ * Ez az osztaly az Area osztalybol szarmazik es letrehoz fajl feltoltesi mezot amit sorokra bont, feldolgoz es hozzaad a Managerhez
+ */
+class Upload extends Area{
+    /**
+     * Letrehoz egy Upload objektumot  ami egy fajl input mezot tartalmaz
+     * @param {string} className A div osztalyneve ami stringet var
+     * @param {Manager} manager A manager objektum ami a Person objektumokat kezeli
+     *  
+     */
+    constructor(className, manager){ //Letrehozzuk a konstruktort
+        super(className, manager); //Meghivjuk a szulo osztaly konstruktorat
+        const fileBemenet = document.createElement('input'); //Letrehozzuk a bemeneti mezot ami input tipusu
+        fileBemenet.id = 'filebemenet'; //Beallitjuk az idjat filebemenetre
+        fileBemenet.type = 'file'; //Beallitjuk a tipusat fajlbeviteli mezore
+        this.div.appendChild(fileBemenet);  //Hozzaadjuk a divhez a fileBemenetet
+        fileBemenet.addEventListener('change', (e) => { ////Hozzaadunk egy addEventListenert a fileBemenethez ami a change esemenyre figyel
+            const fajl = e.target.files[0]; //Kivalasztjuk az elso file-t
+            const fileReader = new FileReader(); //Letrehozzuk a fileReader objektumot
+            fileReader.onload = () => { //Akkor kezdodik el ha betoltodott a fajl
+                const fajlLines = fileReader.result.split('\n'); //Beolvassuk a fajlt es elvalasztjuk a sorokat
+                const removeEventListener = fajlLines.slice(1); //Eltavolitjuk az elso sort a fajlbol
+                for(const sor of removeEventListener) //Vegigmegyunk a removeEventListeneren a sor valtozoval
+                {
+                   const trimmedSor = sor.trim(); //Eltavolitjuk a sor elejrol es vegerol a whitespaceket
+                   const mezok = trimmedSor.split(';'); //Elvalasztjuk a sorokat pontosvesszovel
+                   const person = new Person(mezok[0], mezok[2], mezok[1]); //Letrehozzuk a person objektumot a mezokbol
+                    this.manager.addPerson(person); //Hozzaadjuk a managerhez a person objektumot
+                }
+            }
+            fileReader.readAsText(fajl); //Beolvassuk a fajlt szovegkent
+        })
+
+    }
+}
 
 /**
  * Ez az osztaly az urlapnak a mezoit reprezentalja amik tartalmaznak egy labelt, egy inputot es egy error elemet
