@@ -12,5 +12,6 @@ const fieldConfig = [{ //Letrehozzuk a fieldConfig tombot
     id: 'title', // Harmadik mezo idje
     label: 'cim', // Harmadik mezo labelje
 }]
-const table = new Table('table'); // Uj Tablet hozunk letre table parameterrel
-const form = new Form('form', fieldConfig); // Uj Formot hozunk letre a form es a fieldConfig parameterekkel
+const manager = new Manager(); //Uj Manager letrehozasa
+const table = new Table('table', manager); // Uj Tablet hozunk letre table es manager parameterekkel
+const form = new Form('form', fieldConfig, manager); // Uj Formot hozunk letre a form, fieldConfig es a manager parameterekkel

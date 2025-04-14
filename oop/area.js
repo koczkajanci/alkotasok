@@ -3,22 +3,32 @@
  */
 class Area{ // Osztaly letrehozasa
     #div; //Letrehozunk a div privat valtozot
+    #manager; //Letrehozunk egy privat valtozot a managernek
     
     /** 
-     * Getter a privat valtozohoz
+     * Getter a div privat valtozohoz
      * @returns {HTMLDivElement} A privat valtozo
      */
     get div(){ //Letrehozunk egy gettert a privat valtozohoz
         return this.#div; //Visszater a privat valtozoval
+    }
+    /**
+     *  Getter a manager privat valtozohoz
+     *  @returns {Manager} A Manager tipusu privat valtozoval ter vissza
+     */
+    get manager(){ //Letrehozunk egy gettert a managernek
+        return this.#manager; //Visszater a privat valtozoval
     }
 
      /**
      * Ez a konstruktor letrehoz egy div elemet es hozzaadja a szulo divhez.
      * 
      * @param {string} className A div osztalyneve ami stringet var
+     * @param {Manager} manager A manager objektum ami a Person objektumokat kezeli
+     * 
      */
-    constructor(className){// //Konstruktor letrehozasa
-
+    constructor(className,manager){// //Konstruktor letrehozasa
+        this.#manager = manager; //Beallitjuk a manager privat valtozot a parameterre
         const container = this.#getContainerDiv(); //Meghivjuk a getContainerDiv fuggvenyt amit a container valtozoba rakunk
         this.#div = document.createElement('div'); //Uj div letrehozasa
         this.#div.className = className; //Beallitjuk az osztalynevet a parameterre
@@ -47,12 +57,31 @@ class Area{ // Osztaly letrehozasa
 class Table extends Area{
     /**
      *  
-     * Ez a konstruktor lekeri a szulo osztaly konstruktorat es meghivja a createTable fuggvenyt
+     * Ez a konstruktor lekeri a szulo osztaly konstruktorat es meghivja a createTable fuggvenyt 
+     * amivel letrehoz egy tablet es beallitja a Manager callback fuggvenyet hogy frissitse uj adatokkal
+     * 
      * @param {string} className A div osztalyneve ami stringet var
+     * @param {Manager} manager A manager objektum ami a Person objektumokat kezeli
      */
-    constructor(className){// //Konstruktor letrehozasa
-        super(className);//Meghivjuk a szulo osztaly konstruktorat
+    constructor(className,manager){// //Konstruktor letrehozasa
+        super(className,manager);//Meghivjuk a szulo osztaly konstruktorat
         const tbody = this.#createTable(); // Meghivjuk a createTable fuggvenyt es belerakjuk a tbody valtozoba
+        this.manager.addPersonCallback((person) => { // Meghivjuk a manager addPersonCallback fuggvenyet
+            const tbodyRow = document.createElement('tr'); // Letrehozunk egy tr elemet a tbodyhoz
+
+            const writerCell = document.createElement('td'); // Letrehozunk egy td elemet a szerzohoz
+            writerCell.innerText = person.writer; // Beallitjuk a cella szoveget a person writerjere
+            tbodyRow.appendChild(writerCell); // Hozzaadjuk a tbodyRowhoz a writerCellt
+
+            const genreCell = document.createElement('td'); // Letrehozunk egy td elemet a mufajhoz
+            genreCell.innerText = person.genre; // Beallitjuk a cella szoveget a person genrejere
+            tbodyRow.appendChild(genreCell); // Hozzaadjuk a tbodyRowhoz a genreCellt
+
+            const titleCell = document.createElement('td'); // Letrehozunk egy td elemet a cimhez
+            titleCell.innerText = person.title; // Beallitjuk a cella szoveget a person titlejere
+            tbodyRow.appendChild(titleCell); // Hozzaadjuk a tbodyRowhoz a titleCellt
+            tbody.appendChild(tbodyRow); // Hozzaadjuk a tbodyhoz a tbodyRowt
+        }) 
        
     }
 
@@ -85,9 +114,11 @@ class Form extends Area{
     /**
      * Ez a konstruktor létrehoz egy űrlapot mezőkkel és hozzáadja a szülő div elemhez.
      * @param {string} className A div osztalyneve ami stringet var
+     * @param {Array} fieldElements A mezok elemei amik egy tombben vannak
+     * @param {Manager} manager A manager objektum ami a Person objektumokat kezeli
      */
-    constructor(className,fieldElements){// //Konstruktor letrehozasa
-        super(className);//Meghivjuk a szulo osztaly konstruktorat
+    constructor(className,fieldElements, manager){// //Konstruktor letrehozasa
+        super(className,manager);//Meghivjuk a szulo osztaly konstruktorat
         const formElement = document.createElement('form'); // Letrehozunk egy form elemet
         this.div.appendChild(formElement); // Hozzaadjuk a divhez
         
@@ -107,6 +138,17 @@ class Form extends Area{
         const button = document.createElement('button'); //Letrehozzuk a gombot
         button.textContent = 'hozzáadás'; //Beallitjuk a gomb szoveget
         formElement.appendChild(button); //Hozzaadjuk a formhoz a gombot
+        formElement.addEventListener('submit', (e)=> { ////Hozzaadunk egy addEventListenert a formhoz ami a submit esemenyre figyel
+            e.preventDefault();//Megakadalyozzuk az alapertelmezett viselkedest
+            const inputFieldList = e.target.querySelectorAll('input'); //Megkeressuk az osszes inputot a formban
+            const valueObject = {}; //Letrehozzuk a valueObjectet ami egy ures objektum
+            for(const element of inputFieldList){ //Vegigmegyunk az inputFieldList tombon az elementel
+                valueObject[element.id] = element.value; //Beallitjuk az objektumot az input idjere es a valuejara
+            }
+            console.log(valueObject);
+            const person = new Person(valueObject.writer, valueObject.genre, valueObject.title); //Letrehozzuk a person objektumot a valueObjectbol
+            this.manager.addPerson(person);//Hozzaadjuk a managerhez a person objektumot
+        })
 
     }
-}
+}   
