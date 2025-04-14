@@ -29,4 +29,16 @@ class Manager {
         this.#array.push(person); // Hozzaadjuk a tombhoz a Person objektumot
         this.#addPersonCallback(person); // Meghivjuk a callback fuggvenyt a Person objektummal
     }
+
+    /**
+     * Ez a fuggveny letrehoz egy csv formatumu szoveget a Person objektumok adataival
+     * @returns {string} A Person objektumok adatait tartalmazo csv szoveg
+     */
+    ExportContentGenerate(){
+        const res = ['writer;genre,title']; //Uj tomb letrehozasa ami a fejlec
+        for(const person of this.#array) { // Vegigmegyunk a tomb elemein
+            res.push(`${person.writer};${person.genre};${person.title}`); // Hozzaadjuk a tombhoz a Person objektum adatait
+        }
+        return res.join('\n'); // Visszaterunk a tomb elemeivel amik uj sorral van elvalasztva
+    }
 }

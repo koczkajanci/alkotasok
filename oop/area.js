@@ -158,10 +158,12 @@ class Form extends Area{
 }
 /**
  * Ez az osztaly az Area osztalybol szarmazik es letrehoz fajl feltoltesi mezot amit sorokra bont, feldolgoz es hozzaad a Managerhez
+ * Illetve letrehoz egy gombot ami letolti a managerben levo adatokat egy fajlba
  */
-class Upload extends Area{
+class UploadDownload extends Area{
     /**
      * Letrehoz egy Upload objektumot  ami egy fajl input mezot tartalmaz
+     * Letrehoz egy gombot ami letolti a managerben levo adatokat egy fajlba
      * @param {string} className A div osztalyneve ami stringet var
      * @param {Manager} manager A manager objektum ami a Person objektumokat kezeli
      *  
@@ -187,6 +189,18 @@ class Upload extends Area{
                 }
             }
             fileReader.readAsText(fajl); //Beolvassuk a fajlt szovegkent
+        })
+        const exportGomb = document.createElement('button') //Letrehozzuk az exportGombot ami a letoltesnek a gombja 
+        exportGomb.textContent = 'Letoltes'; //Beallitjuk a gomb szoveget
+        this.div.appendChild(exportGomb)// Hozzaadjuk a divhez az exportGombot
+        exportGomb.addEventListener('click', () => {  //Hozzaadunk egy esemenyfigyelot az exportGombhoz 
+            const link = document.createElement('a'); //Letrehozzuk a linket ami egy <a> elem
+            const fileContent = this.manager.ExportContentGenerate(); //Meghivjuk a manager ExportContentGenerate fuggvenyet ami visszaadja a fajl tartalmat
+            const fajl = new Blob([fileContent]); //Letrehozunk egy Blob objektumot a fajl tartalmaval
+            link.href = URL.createObjectURL(fajl); //Letrehozzuk a fajl URL-jet
+            link.download = 'newdata.csv'; //Beallitjuk a letoltesi nevet
+            link.click(); //Ramegyunk a linkre
+            URL.revokeObjectURL(link.href);//Eltavolitjuk a letrehozott URL-t
         })
 
     }
