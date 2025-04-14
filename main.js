@@ -54,10 +54,15 @@ for(const element of fieldElements){ //Vegigmegyunk a fieldElements tombon az el
     label.htmlFor =  element.id; //Beallitjuk a label htmlForjat az element idjere
     label.textContent = element.label; //Beallitjuk a label szoveget az element labeljere
     field.appendChild(label); //Hozzaadjuk a fieldhez a labelt
+    field.appendChild(document.createElement('br')) //Hozzaadunk egy sortorest a fieldhez
     const input = document.createElement('input'); //Letrehozzuk egy input elemet
     input.id = element.id; //Beallitjuk az input idjet az element idjere
-    field.appendChild(document.createElement('br')) //Hozzaadunk egy sortorest a fieldhez
     field.appendChild(input); //Hozzaadjuk a fieldhez az inputot
+    field.appendChild(document.createElement('br')) //Hozzaadunk meg egy sortorest a fieldhez
+    const error = document.createElement('span') //Letrehozzuk az error valtozot ami egy span
+    error.className = 'error' //Beallitjuk az error osztalynevet errora
+    field.appendChild(error) //Hozzaadjuk a fieldhez az errort
+
 }   
 
 const formButtonElement = document.createElement('button') //Letrehozzuk a formButtonElementet ami egy button
@@ -68,24 +73,41 @@ formElement.addEventListener('submit', (e)=> { //Hozzaadunk egy addEventListener
     e.preventDefault(); //Megakadalyozzuk az alapertelmezett viselkedest
     const valueObject = {}; //Letrehozzuk a valueObjectet ami egy ures objektum 
     const inputFields = e.target.querySelectorAll('input'); //Kivalasztjuk az osszes input elemet a formban
-    for(const inputField of inputFields) { //Vegigmegyunk az input elemeket tartalmazo tombon
-        valueObject[inputField.id] = inputField.value; //Beallitjuk az objektum kulcsait es ertekeit
+    let valid = true; //Letrehozunk egy valid valtozot ami true
+    for(const element of inputFields) { //Vegigmegyunk az input elemeket tartalmazo tombon
+        const error = element.parentElement.querySelector('.error') //Megkeressuk az error elemet
+        if(!error){
+            console.error('Nincs error elem a mezoben') //Ha nincs error akkor kiirjuk a konzolra
+            return; //Visszaterunk
+        }
+        error.textContent = ''; //Beallitjuk az error szoveget uresre
+        if(element.value === ''){
+            error.textContent = 'Kotelezo megadni' //Beallitjuk az error szoveget
+            valid = false; //Beallitjuk a valid valtozot falsera
+
+        }
+        valueObject[element.id] = element.value; //Beallitjuk az objektum kulcsait es ertekeit
     }
-    array.push(valueObject); //Hozzaadjuk az arrayhoz az objektumot
-    const tbodyRow = document.createElement('tr'); //Letrehozzuk a tbodyRowt ami egy tr
-    tableBody.appendChild(tbodyRow); //Hozzaadjuk a tbodyhoz a tbodyRowt
-
-    const writerCell = document.createElement('td'); //Letrehozzuk a writerCellt ami egy td
-    writerCell.textContent = valueObject.writer; //Beallitjuk a cella szoveget
-    tbodyRow.appendChild(writerCell); //Hozzaadjuk a tbodyRowhoz a writerCellt
     
-    const genreCell = document.createElement('td'); //Letrehozzuk a genreCellt ami egy td
-    genreCell.textContent = valueObject.genre; //Beallitjuk a cella szoveget
-    tbodyRow.appendChild(genreCell); //Hozzaadjuk a tbodyRowhoz a genreCellt
+   
+    if(valid){//Hogyha a valid igaz akkor lep bele az ifbe
+        array.push(valueObject); //Hozzaadjuk az arrayhoz az objektumot
+        const tbodyRow = document.createElement('tr'); //Letrehozzuk a tbodyRowt ami egy tr
+        tableBody.appendChild(tbodyRow); //Hozzaadjuk a tbodyhoz a tbodyRowt
 
-    const titleCell = document.createElement('td'); //Letrehozzuk a titleCellt ami egy td
-    titleCell.textContent = valueObject.title; //Beallitjuk a cella szoveget
-    tbodyRow.appendChild(titleCell); //Hozzaadjuk a tbodyRowhoz a titleCellt
+        const writerCell = document.createElement('td'); //Letrehozzuk a writerCellt ami egy td
+        writerCell.textContent = valueObject.writer; //Beallitjuk a cella szoveget
+        tbodyRow.appendChild(writerCell); //Hozzaadjuk a tbodyRowhoz a writerCellt
+    
+        const genreCell = document.createElement('td'); //Letrehozzuk a genreCellt ami egy td
+        genreCell.textContent = valueObject.genre; //Beallitjuk a cella szoveget
+        tbodyRow.appendChild(genreCell); //Hozzaadjuk a tbodyRowhoz a genreCellt
+
+        const titleCell = document.createElement('td'); //Letrehozzuk a titleCellt ami egy td
+        titleCell.textContent = valueObject.title; //Beallitjuk a cella szoveget
+        tbodyRow.appendChild(titleCell); //Hozzaadjuk a tbodyRowhoz a titleCellt
+
+    }
 
 })
 

@@ -145,7 +145,7 @@ class Form extends Area{
             for(const element of inputFieldList){ //Vegigmegyunk az inputFieldList tombon az elementel
                 valueObject[element.id] = element.value; //Beallitjuk az objektumot az input idjere es a valuejara
             }
-            console.log(valueObject);
+            
             const person = new Person(valueObject.writer, valueObject.genre, valueObject.title); //Letrehozzuk a person objektumot a valueObjectbol
             this.manager.addPerson(person);//Hozzaadjuk a managerhez a person objektumot
         })
