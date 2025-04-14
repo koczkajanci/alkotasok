@@ -136,14 +136,22 @@ class Form extends Area{
         formElement.appendChild(button); //Hozzaadjuk a formhoz a gombot
         formElement.addEventListener('submit', (e)=> { ////Hozzaadunk egy addEventListenert a formhoz ami a submit esemenyre figyel
             e.preventDefault();//Megakadalyozzuk az alapertelmezett viselkedest
-            const inputFieldList = e.target.querySelectorAll('input'); //Megkeressuk az osszes inputot a formban
             const valueObject = {}; //Letrehozzuk a valueObjectet ami egy ures objektum
-            for(const element of inputFieldList){ //Vegigmegyunk az inputFieldList tombon az elementel
-                valueObject[element.id] = element.value; //Beallitjuk az objektumot az input idjere es a valuejara
+            let valid = true; //Letrehozzuk a valid valtozot amit igazra allitunk
+            for(const field of this.#formFieldTomb){ //Vegigmegyunk a #formFieldTomb tombon 
+                field.error = ''; //Beallitjuk az errort uresre
+                if(field.value === ''){ //Ha az input valueja ures
+                    field.error = 'Kotelezo megadni'; //Beallitjuk az error szoveget
+                    valid = false; //Beallitjuk a valid valtozot hamisra
+                }
+                valueObject[field.id] = field.value; //Beallitjuk a valueObjectet az input idjaval es valuejaval
             }
-            
-            const person = new Person(valueObject.writer, valueObject.genre, valueObject.title); //Letrehozzuk a person objektumot a valueObjectbol
-            this.manager.addPerson(person);//Hozzaadjuk a managerhez a person objektumot
+
+            if(valid){//Akkor megy bele az ifbe ha a valid igaz
+                const person = new Person(valueObject.writer, valueObject.genre, valueObject.title); //Letrehozzuk a person objektumot a valueObjectbol
+                this.manager.addPerson(person);//Hozzaadjuk a managerhez a person objektumot
+            }
+           
         })
 
     }
@@ -176,7 +184,7 @@ class FormInputField{
      * @param {string} value Az ertek amit megkell jeleniteni 
      */
     set error(value){ //Setter az error privat valtozora
-        this.errorElem.textContent = value; //Beallitjuk az error szoveget
+        this.#errorElem.textContent = value; //Beallitjuk az error szoveget
     }
     /**
      * Letrehoz egy FormInputField objektumot a megadott adatokkal
