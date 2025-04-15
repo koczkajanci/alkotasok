@@ -66,23 +66,33 @@ class Table extends Area{
     constructor(className,manager){// //Konstruktor letrehozasa
         super(className,manager);//Meghivjuk a szulo osztaly konstruktorat
         const tbody = this.#createTable(); // Meghivjuk a createTable fuggvenyt es belerakjuk a tbody valtozoba
-        this.manager.addPersonCallback((person) => { // Meghivjuk a manager addPersonCallback fuggvenyet
-            const tbodyRow = document.createElement('tr'); // Letrehozunk egy tr elemet a tbodyhoz
-
-            const writerCell = document.createElement('td'); // Letrehozunk egy td elemet a szerzohoz
-            writerCell.innerText = person.writer; // Beallitjuk a cella szoveget a person writerjere
-            tbodyRow.appendChild(writerCell); // Hozzaadjuk a tbodyRowhoz a writerCellt
-
-            const genreCell = document.createElement('td'); // Letrehozunk egy td elemet a mufajhoz
-            genreCell.innerText = person.genre; // Beallitjuk a cella szoveget a person genrejere
-            tbodyRow.appendChild(genreCell); // Hozzaadjuk a tbodyRowhoz a genreCellt
-
-            const titleCell = document.createElement('td'); // Letrehozunk egy td elemet a cimhez
-            titleCell.innerText = person.title; // Beallitjuk a cella szoveget a person titlejere
-            tbodyRow.appendChild(titleCell); // Hozzaadjuk a tbodyRowhoz a titleCellt
-            tbody.appendChild(tbodyRow); // Hozzaadjuk a tbodyhoz a tbodyRowt
+        this.manager.addPersonCallback((person) => { //Hozzaadunk egy callback fuggvenyt a managerhez ami a person objektumot varja
+            this.#generatePersonRow(person, tbody) //Meghivjuk a generatePersonRow fuggvenyt a person objektummal es a tbodyval
+        })
+        this.manager.setTablaRenderelesCallback((array) => { // //Hozzaadunk egy callback fuggvenyt a managerhez ami a szurt tombot varja
+           tbody.innerHTML = ''; // Uresre allitjuk a tbodyt
+           for(const per of array){ // //Vegigmegyunk a tombon az array valtozoval
+                this.#generatePersonRow(per, tbody);  // //Meghivjuk a generatePersonRow fuggvenyt a person objektummal es a tbodyval
+           }
         }) 
        
+    }
+
+    #generatePersonRow(person, tbody){ //Ez a fuggveny letrehoz egy sort a tablan a person objektummal  
+        const tbodyRow = document.createElement('tr'); // Letrehozunk egy tr elemet a tbodyhoz
+
+        const writerCell = document.createElement('td'); // Letrehozunk egy td elemet a szerzohoz
+        writerCell.innerText = person.writer; // Beallitjuk a cella szoveget a person writerjere
+        tbodyRow.appendChild(writerCell); // Hozzaadjuk a tbodyRowhoz a writerCellt
+
+        const genreCell = document.createElement('td'); // Letrehozunk egy td elemet a mufajhoz
+        genreCell.innerText = person.genre; // Beallitjuk a cella szoveget a person genrejere
+        tbodyRow.appendChild(genreCell); // Hozzaadjuk a tbodyRowhoz a genreCellt
+
+        const titleCell = document.createElement('td'); // Letrehozunk egy td elemet a cimhez
+        titleCell.innerText = person.title; // Beallitjuk a cella szoveget a person titlejere
+        tbodyRow.appendChild(titleCell); // Hozzaadjuk a tbodyRowhoz a titleCellt
+        tbody.appendChild(tbodyRow); // Hozzaadjuk a tbodyhoz a tbodyRowt
     }
 
     /**

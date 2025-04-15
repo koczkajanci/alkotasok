@@ -4,6 +4,8 @@
 class Manager {
     #array; // Privat tomb a Person objektumok tarolasara
     #addPersonCallback; // Privat valtozo a callback fuggveny tarolasara
+    #tablaRenderelesCallback; // Privat valtozo a tablta rendereles callback fuggveny tarolasara
+
 
     /**
      * Letrehozunk egy Manager objektumot es inicializaljuk az ures tombot
@@ -14,11 +16,38 @@ class Manager {
 
     /**
      * Beallit egy callback fuggvenyt, amit akkor hiv meg, amikor egy uj Person objektumot hozzaad
-     * @param {Function} callback 
+     * @param {Function} callback A callback fuggveny ami a szurt personokat kapja parameternek
      * @callback {Person} A hozzaadott Person objektum
      */
     addPersonCallback(callback) { // Setter a callback fuggvenyhez
         this.#addPersonCallback = callback; // Beallitjuk a callback fuggvenyt
+    }
+
+    /**
+     * Beallit egy callback fuggvenyt, amit akkor hiv meg amikor a tablazat ujrarendelni akarjuk
+     * @param {Function} callback A callback fuggveny ami a szurt personokat kapja parameternek
+     * @callback {Array} A szurt Person objektumok tombje
+     * 
+     */
+    setTablaRenderelesCallback(callback) { // Setter a tabla rendereles callback fuggvenyhez
+        this.#tablaRenderelesCallback = callback; 
+    }
+
+
+    /**
+     * Ez a fuggveny szuri meg a person objektumokat a feltetel alapjan es meghivja a tabla ujrarendelesre valo callbacket
+     * @param  {Function} callback A callback fuggveny ami a szuresi feltetel
+     * @callback {boolean} Igaz ha az adott Person objektum megfelel a szűrési feltételnek.
+     * 
+     */
+    filter(callback) { // Szures fuggveny egy callback parameterrel 
+        const res = []; // Letrehozunk egy ures tombot amibe a szurt elemeke fogjuk belerakni
+        for (const elem of this.#array) { // Vegigmegyunk a tomb elemein
+            if (callback(elem)) { // Ha a callback fuggveny igazat ad vissza
+                res.push(elem); // Hozzaadjuk a tombhoz az elemet
+            }
+        }
+        this.#tablaRenderelesCallback(res); // Meghivjuk a tabla rendereles callback fuggvenyt a szurt tombbel
     }
 
     /**

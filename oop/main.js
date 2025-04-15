@@ -14,5 +14,6 @@ const fieldConfig = [{ //Letrehozzuk a fieldConfig tombot
 }]
 const manager = new Manager(); //Uj Manager letrehozasa
 const table = new Table('table', manager); // Uj Tablet hozunk letre table es manager parameterekkel
-const form = new Form('form', fieldConfig, manager); // Uj Formot hozunk letre a form, fieldConfig es a manager parameterekkel\
+const form = new Form('form', fieldConfig, manager); // Uj Formot hozunk letre a form, fieldConfig es a manager parameterekkel
 const fileUpload = new UploadDownload('upload', manager); //Uj fileUpload letrehozasa az upload es a manager parameterekkel
+const filterOsszetett = new Filter('filter', manager); //Uj filterOsszetett letrehozasa a filter es a manager parameterekkel
