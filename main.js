@@ -1,6 +1,6 @@
 const array = [] //Letrehozzuk az arrayt ami egy ures tomb
 /**
- * 
+ *  Ez a fuggveny letrehoz egy div elemet es beallitja annak az osztalynevet a parameterre amit kapott es visszater az elemmel
  * @param {string} className Az osztaly neve ami stringet var
  * @returns {HTMLDivElement} Maga a div elem
  */
@@ -9,6 +9,24 @@ const divMaker = (className) => {  //Letrehozzuk a divMaker fuggvenyt ami a clas
     div.className = className//Beallitja a div osztalynevet a classNamere
     return div; //Visszater a div elemmel
 }
+/**
+ * Ez a fuggveny egy tomb elemeit leszuri egy feltetel alapjan es visszater a leszurt tombbel
+ * @param {Array} array  A tomb amit szurni szeretnenk
+ * @param  {Function} callback  Egy fuggveny ami az egesz tombon vegigmegy es igazzal ter vissza ha megfelel a feltetelnek
+ * @returns {Array} A leszurt tomb
+ */
+const filter = (array,callback) => { //Letrehozzuk a filter fuggvenyt ami az arrayt es a callbacket varja 
+    const res = []; //Letrehozzuk a res tombot amibe fogjuk rakni a leszurt elemeket
+    for(const elem of array) { //Vegigmegyunk az array tombon az elem valtozoval 
+        if(callback(elem)){ //Ha a callback igazat ad vissza akkor belelep az ifbe
+            res.push(elem); //Hozzaadja az elemet a res tombhoz
+        }
+    }
+    return res; //Visszater a res tombbel
+}
+
+
+
 
 const containerDiv = divMaker('container'); //containerDiv letrehozasa a divMakerrel
 document.body.appendChild(containerDiv);//Hozzaadjuk a bodyhoz a containerDivet
@@ -167,3 +185,97 @@ exportGomb.addEventListener('click', () => {  //Hozzaadunk egy esemenyfigyelot a
     link.click(); //Ramegyunk a linkre
     URL.revokeObjectURL(link.href);//Eltavolitjuk a letrehozott URL-t
 })
+
+const filterFormDiv = divMaker('filterform'); //Letrehozzuk a filterFormDivet a divMaker fuggvennyel
+containerDiv.appendChild(filterFormDiv); //Hozzaadjuk a containerDivhez a filterFormDivet
+
+const formFilter = document.createElement('form'); //Letrehozzuk a formFilter elemet ami egy form
+filterFormDiv.appendChild(formFilter); //Hozzaadjuk a filterFormDivhez a formot
+const select = document.createElement('select'); //Letrehozzuk a select elemet
+formFilter.appendChild(select); //Hozzaadjuk a formhoz a select elemet
+
+const opciok = [ //A legordulo lista opcioinak a tombje
+    {
+        value: '', //A value ures 
+        innerText: '' //A szoveg ures
+    },
+    {
+        value: 'writer', // //A value a writer
+        innerText: 'Szerzo' //A szoveg Szerzo
+    },
+    {
+        value: 'genre', //A value a genre
+        innerText: 'Mufaj' //A szoveg Mufaj
+    },
+    {
+        value: 'title', //A value a title
+        innerText: 'Cim' //A szoveg Cim
+    } 
+]
+
+for(const opcio of opciok) { //Vegigmegyunk az opciok tombon
+    const option = document.createElement('option'); //Letrehozzuk az option elemet
+    option.value = opcio.value; //Beallitjuk az option valuejat
+    option.innerText = opcio.innerText; //Beallitjuk az option szoveget
+    select.appendChild(option); //Hozzaadjuk a selecthez az optiont
+}
+
+const input = document.createElement('input'); //Letrehozzuk az input elemet
+input.id = 'filterInput'; //Beallitjuk az input azonositojat filterInputra
+formFilter.appendChild(input); //Hozzaadjuk a formhoz az inputot
+
+const filterButton = document.createElement('button'); //Letrehozzuk a filterButton elemet ami egy gomb
+filterButton.innerText = 'Szures'; //A gomb szovegenek beallitjuk hogy Szures
+formFilter.appendChild(filterButton); //Hozzaadjuk a formhoz a filterButtont
+formFilter.addEventListener('submit', (e) => { //Hozzaadunk egy esemenyfigyelot a formhoz ami a submit esemenyre figyel 
+    e.preventDefault(); //Megakadalyozzuk az alapertelmezett viselkedest
+    const filterInput = e.target.querySelector('#filterInput'); //Kivalasztjuk a filterInput elemet
+    const select = e.target.querySelector('select'); //Kivalasztjuk a select elemet
+
+    /**
+     * Leszuri az array tombot a feltetetelek alapjan 
+     * Ha a legordulo listaban kivalasztott ertek es az inputnak az erteke egyenlo egy elemmel akkor az bekerul a szurt tombbe
+     * @returns {Array} A szurt tomb
+     */
+    const filteresArray = filter(array, (elem) => { //Letrehozzuk a filteresArrayt ami a filter fuggveny visszateresi erteke
+
+        if(select.value == 'writer'){ //Ha a select valueja writer akkor belelep az ifbe
+            if(filterInput.value === elem.writer){ //Ha a filterInput valueja egyenlo az elem writerjaval akkor belelep az ifbe
+                return true; //Visszater trueval
+            }
+        } 
+        else if(select.value == 'genre'){ //Ha a select valueja genre akkor belelep az ifbe
+            if(filterInput.value === elem.genre){ //Ha a filterInput valueja egyenlo az elem genrejaval akkor belelep az ifbe
+                return true; //Visszater trueval
+            }
+        } 
+        else if(select.value == 'title'){ //Ha a select valueja title akkor belelep az ifbe
+            if(filterInput.value === elem.title){ //Ha a filterInput valueja egyenlo az elem titlejaval akkor belelep az ifbe
+                return true; //Visszater trueval
+            }
+        }else{ //Ha egyik feltetel sem teljesul akkor belelep az elsebe
+            return true; //Visszater trueval
+        }
+    })
+
+    tableBody.innerHTML = ''; //Reseteljuk a tableBodyt
+    for(const elem of filteresArray) { //Vegigmegyunk a filteresArray tombon
+        const tbodyRow = document.createElement('tr'); //Letrehozzuk a tbodyRowt ami egy tr
+        tableBody.appendChild(tbodyRow); //Hozzaadjuk a tbodyhoz a tbodyRowt
+
+        const writerCell = document.createElement('td'); //Letrehozzuk a writerCellt ami egy td
+        writerCell.textContent = elem.writer; //Beallitjuk a cella szoveget
+        tbodyRow.appendChild(writerCell); //Hozzaadjuk a tbodyRowhoz a writerCellt
+
+        const genreCell = document.createElement('td'); //Letrehozzuk a genreCellt ami egy td
+        genreCell.textContent = elem.genre; //Beallitjuk a cella szoveget
+        tbodyRow.appendChild(genreCell); //Hozzaadjuk a tbodyRowhoz a genreCellt
+
+        const titleCell = document.createElement('td'); //Letrehozzuk a titleCellt ami egy td
+        titleCell.textContent = elem.title; //Beallitjuk a cella szoveget
+        tbodyRow.appendChild(titleCell); //Hozzaadjuk a tbodyRowhoz a titleCellt
+    }
+
+})
+
+
