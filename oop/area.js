@@ -48,6 +48,17 @@ class Area{ // Osztaly letrehozasa
         }
         return containerDiv; //Visszater a containerDivvel
     }
+
+    /**
+     * Ez a fuggveny letrehoz egy gombot aminek a szoveget a parameter adja meg es visszater a gombbal
+     * @returns {HTMLButtonElement} Visszater a gombbal ami HTMLButtonElement tipusu
+     * @param {string} text A gomb szovege ami stringet var
+     */
+    generateButton(text){ //Letrehozzuk a fuggvenyt aminek a parameterje a gomb szovege
+        const gomb = document.createElement('button'); //Letrehozzuk a gombot
+        gomb.textContent = text; //Beallitjuk a gomb szoveget
+        return gomb; //Visszater a gombbal
+    }
 }
 
 /**
@@ -66,33 +77,65 @@ class Table extends Area{
     constructor(className,manager){// //Konstruktor letrehozasa
         super(className,manager);//Meghivjuk a szulo osztaly konstruktorat
         const tbody = this.#createTable(); // Meghivjuk a createTable fuggvenyt es belerakjuk a tbody valtozoba
-        this.manager.addPersonCallback((person) => { //Hozzaadunk egy callback fuggvenyt a managerhez ami a person objektumot varja
-            this.#generatePersonRow(person, tbody) //Meghivjuk a generatePersonRow fuggvenyt a person objektummal es a tbodyval
-        })
-        this.manager.setTablaRenderelesCallback((array) => { // //Hozzaadunk egy callback fuggvenyt a managerhez ami a szurt tombot varja
-           tbody.innerHTML = ''; // Uresre allitjuk a tbodyt
-           for(const per of array){ // //Vegigmegyunk a tombon az array valtozoval
-                this.#generatePersonRow(per, tbody);  // //Meghivjuk a generatePersonRow fuggvenyt a person objektummal es a tbodyval
-           }
-        }) 
+        this.manager.addPersonCallback(this.#personAddCallback(tbody)); //Beallitjuk a manager addPerson callbackjet a personAddCallback fuggvenyre
+        this.manager.setTablaRenderelesCallback(this.#tableRenderelesCallback(tbody)); //Beallitjuk a manager tabla rendereles callbackjet a tableRenderelesCallback fuggvenyre 
        
     }
 
+    /**
+     * Ez egy callback fuggveny ami a tablazat torzset frissiti uj adatokkal\
+     * @returns {Function} Visszater egy fuggvennyel ami a tablazatot frissiti
+     * @callback {Array} A szurt Person objektumok tombje
+     * @param {HTMLTableSectionElement} tablebody A tablazat torzse ami HTMLTableSectionElement tipusu
+     */
+    #tableRenderelesCallback(tablebody){
+        return (array) => {
+            tablebody.innerHTML = ''; // Uresre allitjuk a tbodyt
+            for(const per of array){ // //Vegigmegyunk a tombon az array valtozoval
+                this.#generatePersonRow(per, tablebody);  // //Meghivjuk a generatePersonRow fuggvenyt a person objektummal es a tbodyval
+           }
+        }
+    }
+    /**
+     * Ez egy callback fuggveny ami egy uj person objektumot ad hozza a tablahoz
+     * @param {HTMLTableSectionElement} tablebody A tablazat torzse ami HTMLTableSectionElement tipusu
+     * @returns {Function} Visszater egy fuggvennyel ami a tablazatot frissiti
+     * @callback {Person} A hozzaadott Person objektum
+     * 
+     */
+    #personAddCallback(tablebody){ //letrehozzuk a callbacket a tablebody parameterrel
+        return (person) => { //Hozzaadunk egy callback fuggvenyt a managerhez ami a person objektumot varja
+            this.#generatePersonRow(person, tablebody) //Meghivjuk a generatePersonRow fuggvenyt a person objektummal es a tablebodyval
+        }
+    }
+
+
+    /**
+     * Ez a fuggveny letrehoz egy sort a tablan a person objektummal
+     * @param {Person} person A person objektum ami a sort letrehozza
+     * @param {HTMLTableSectionElement} tbody A tablazat torzse ami HTMLTableSectionElement tipusu
+     * @returns {HTMLTableRowElement} Visszater a tbodyRowval ami HTMLTableRowElement tipusu
+     */
     #generatePersonRow(person, tbody){ //Ez a fuggveny letrehoz egy sort a tablan a person objektummal  
         const tbodyRow = document.createElement('tr'); // Letrehozunk egy tr elemet a tbodyhoz
 
-        const writerCell = document.createElement('td'); // Letrehozunk egy td elemet a szerzohoz
-        writerCell.innerText = person.writer; // Beallitjuk a cella szoveget a person writerjere
-        tbodyRow.appendChild(writerCell); // Hozzaadjuk a tbodyRowhoz a writerCellt
-
-        const genreCell = document.createElement('td'); // Letrehozunk egy td elemet a mufajhoz
-        genreCell.innerText = person.genre; // Beallitjuk a cella szoveget a person genrejere
-        tbodyRow.appendChild(genreCell); // Hozzaadjuk a tbodyRowhoz a genreCellt
-
-        const titleCell = document.createElement('td'); // Letrehozunk egy td elemet a cimhez
-        titleCell.innerText = person.title; // Beallitjuk a cella szoveget a person titlejere
-        tbodyRow.appendChild(titleCell); // Hozzaadjuk a tbodyRowhoz a titleCellt
+        this.#generateCell(tbodyRow, person.writer); // Meghivjuk a generateCell fuggvenyt a tbodyRowval es a person writerjaval
+        this.#generateCell(tbodyRow, person.genre); // Meghivjuk a generateCell fuggvenyt a tbodyRowval es a person genrejaval
+        this.#generateCell(tbodyRow, person.title); // Meghivjuk a generateCell fuggvenyt a tbodyRowval es a person titlejaval
         tbody.appendChild(tbodyRow); // Hozzaadjuk a tbodyhoz a tbodyRowt
+    }
+
+    /**
+     *  Ez a fuggveny letrehoz egy cellat a tablan a megadott tartalommal es tipussal
+     *  @param {HTMLTableRowElement} sor A sor amihez a cellat hozzadjuk 
+     * @param {string} content A cella tartalma ami stringet var
+     * @param {string} type A cella tipusa ami stringet var (td vagy th)
+     * @return {HTMLTableCellElement} Visszater a cellaval ami HTMLTableCellElement tipusu
+     */
+    #generateCell(sor,content, type='td'){ //Letrehozzuk a fuggvenyt aminek a parameterei a sor, a content es a type
+        const cella = document.createElement(type); //Letrehozzuk a cellat ami egy td vagy th elem
+        cella.textContent = content; //Beallitjuk a cella szoveget a content parameterre
+        sor.appendChild(cella); //Hozzaadjuk a sorhoz a cellat
     }
 
     /**
@@ -108,9 +151,7 @@ class Table extends Area{
         tableHeader.appendChild(headerRow); // Hozzaadjuk a theadhez
         const headerCells = ['Szerzo', 'mufaj', 'cim']; // A fejlec cellainak tartalma
         for (const cellText of headerCells) { //Vegigmegyunk a headerCells tombon
-            const headerCell = document.createElement('th'); // Letrehozunk egy th elemet
-            headerCell.innerText = cellText; // Beallitjuk a cella szoveget
-            headerRow.appendChild(headerCell); // Hozzaadjuk a sorhoz
+            this.#generateCell(headerRow, cellText, 'th'); // Meghivjuk a generateCell fuggvenyt a headerRowval es a cellTextel
         }
         const tableBody = document.createElement('tbody'); // Letrehozunk egy tbody elemet
         tableElement.appendChild(tableBody); // Hozzaadjuk a tablehez
@@ -122,7 +163,7 @@ class Table extends Area{
  */
 class Form extends Area{
 
-    #formFieldTomb; 
+    #formFieldTomb; //Privat valtozo ami a form mezoket tarolja
     /**
      * Ez a konstruktor létrehoz egy űrlapot mezőkkel és hozzáadja a szülő div elemhez.
      * @param {string} className A div osztalyneve ami stringet var
@@ -132,39 +173,75 @@ class Form extends Area{
     constructor(className,fieldElements, manager){// //Konstruktor letrehozasa
         super(className,manager);//Meghivjuk a szulo osztaly konstruktorat
         this.#formFieldTomb = []; //Letrehozunk egy privat tombot ami meg ures
+        const formElement = this.#generateForm(fieldElements); //Meghivjuk a generateForm fuggvenyt a fieldElements parameterevel
+        formElement.addEventListener('submit', this.#formsubmitEventListener()); //Hozzaadunk egy esemenyfigyelot a formhoz ami a submit esemenyre figyel
+    }        
+
+    
+    /**
+     * Ez a fuggveny letrehoz egy formot a megadott mezokkel es visszater a form elemmel
+     * @param {Array} fieldElements A mezok elemei amik egy tombben vannak
+     * @return {HTMLFormElement} Visszater a form elemmel ami HTMLFormElement tipusu
+     */
+    #generateForm(fieldElements){ //Letrehozzuk a fuggvenyt aminek a a parametere a fieldElements tomb
         const formElement = document.createElement('form'); // Letrehozunk egy form elemet
         this.div.appendChild(formElement); // Hozzaadjuk a divhez
-        
         for(const element of fieldElements){ //Vegigmegyunk a fieldElements tombon az element valtozoval
             const formInputField = new FormInputField(element.id, element.label); //Letrehozzuk a formInputFieldet az element idjaval es labeljevel
             this.#formFieldTomb.push(formInputField); //Hozzaadjuk a formInputFieldet a #formFieldTombhoz
             formElement.appendChild(formInputField.divGetter()); //Hozzaadjuk a formhoz a formInputFieldet
         }   
-
-        const button = document.createElement('button'); //Letrehozzuk a gombot
-        button.textContent = 'hozzáadás'; //Beallitjuk a gomb szoveget
+        const button = this.generateButton('Hozzaad'); //Letrehozzuk a gombot a generateButton fuggveny segitsegevel
         formElement.appendChild(button); //Hozzaadjuk a formhoz a gombot
-        formElement.addEventListener('submit', (e)=> { ////Hozzaadunk egy addEventListenert a formhoz ami a submit esemenyre figyel
-            e.preventDefault();//Megakadalyozzuk az alapertelmezett viselkedest
-            const valueObject = {}; //Letrehozzuk a valueObjectet ami egy ures objektum
-            let valid = true; //Letrehozzuk a valid valtozot amit igazra allitunk
-            for(const field of this.#formFieldTomb){ //Vegigmegyunk a #formFieldTomb tombon 
-                field.error = ''; //Beallitjuk az errort uresre
-                if(field.value === ''){ //Ha az input valueja ures
-                    field.error = 'Kotelezo megadni'; //Beallitjuk az error szoveget
-                    valid = false; //Beallitjuk a valid valtozot hamisra
-                }
-                valueObject[field.id] = field.value; //Beallitjuk a valueObjectet az input idjaval es valuejaval
-            }
 
-            if(valid){//Akkor megy bele az ifbe ha a valid igaz
+        return formElement; //Visszater a formElementtel
+    }
+    /**
+     * Ez a fuggveny egy eventListener ami az urlap elkuldesekor fut le
+     * Megnezi hogy minden mezo ki van e toltve es ha igen akkor letrehoz egy Person objektumot es hozzaadja a managerhez
+     * @returns {Function} Visszater ezzel a fuggvennyel
+     */
+    #formsubmitEventListener(){ //Letrehozzuk a fuggvenyt aminek nincs parameterje
+        return (e) => { //Letrehozzuk a fuggvenyt parameter nelkul 
+            e.preventDefault(); //Megakadalyozzuk az alapertelmezett viselkedest
+            if(this.#fullValidacio()){ //Ha a fullValidacio fuggveny igazat ad vissza
+                const valueObject = this.#getValueObject(); //Meghivjuk a getValueObject fuggvenyt ami visszater egy valueObjecttel
                 const person = new Person(valueObject.writer, valueObject.genre, valueObject.title); //Letrehozzuk a person objektumot a valueObjectbol
                 this.manager.addPerson(person);//Hozzaadjuk a managerhez a person objektumot
             }
-           
-        })
-
+            
+        }
     }
+    /**
+     * Ellenorzi hogy ki van e toltve az osszes input mező es ha nincs akkor egy hobauzenetet jelenit meg
+     * @returns {boolean} Visszater egy boolean valtozoval
+     * 
+     */
+    #fullValidacio(){ //Ez a fuggveny vegigmegy a #formFieldTombon es megnezi hogy minden mezo ki van e toltve 
+        let valid = true; //Letrehozzuk a valid valtozot amit igazra allitunk
+        for(const field of this.#formFieldTomb){ //Vegigmegyunk a #formFieldTomb tombon 
+            field.error = ''; //Beallitjuk az errort uresre
+            if(field.value === ''){ //Ha az input valueja ures
+                field.error = 'Kotelezo megadni'; //Beallitjuk az error szoveget
+                valid = false; //Beallitjuk a valid valtozot hamisra
+            }
+        }
+        return valid; //Visszater a valid valtozoval
+    }
+    /**
+     * Letrehoz egy objektumot ami tartalmazza az osszes input mezot es azok ertekeit
+     * @returns {Object} Ennek az objektumaval ter vissza
+     */
+    #getValueObject(){ //Ez a fuggveny letrehoz egy valueObjectet ami tartalmazza az osszes input mezot 
+        const valueObject = {}; //Letrehozzuk a valueObjectet ami egy ures objektum
+        for(const field of this.#formFieldTomb){ //Vegigmegyunk a #formFieldTomb tombon 
+            valueObject[field.id] = field.value; //Beallitjuk az idjat es a valuejat
+        }
+        return valueObject; //Visszater a valueObjecttel
+    }
+    
+
+    
 }
 /**
  * Ez az osztaly az Area osztalybol szarmazik es letrehoz fajl feltoltesi mezot amit sorokra bont, feldolgoz es hozzaad a Managerhez
@@ -184,7 +261,35 @@ class UploadDownload extends Area{
         fileBemenet.id = 'filebemenet'; //Beallitjuk az idjat filebemenetre
         fileBemenet.type = 'file'; //Beallitjuk a tipusat fajlbeviteli mezore
         this.div.appendChild(fileBemenet);  //Hozzaadjuk a divhez a fileBemenetet
-        fileBemenet.addEventListener('change', (e) => { ////Hozzaadunk egy addEventListenert a fileBemenethez ami a change esemenyre figyel
+        fileBemenet.addEventListener('change', this.#feltoltesEventListener()) ////Hozzaadunk egy addEventListenert a fileBemenethez ami a change esemenyre figyel
+   
+        const exportGomb = this.generateButton('Letoltes'); //Letrehozzuk a gombot a generateButton fuggveny segitsegevel
+        this.div.appendChild(exportGomb)// Hozzaadjuk a divhez az exportGombot
+        exportGomb.addEventListener('click',this.#exportGombEventListener()) //Hozzaadunk egy addEventListenert a exportGombhoz ami a click esemenyre figyel es meghivja a #exportGombEventListener fuggvenyt
+
+    }
+    /**
+     * Ez a fuggveny egy eventListener ami a gombhoz van hozzaadva es letolti a fajlt
+     * @returns {Function} Visszater egy fuggvennyel ami letolti a fajlt
+     * 
+     */
+    #exportGombEventListener(){ //Ez a fuggveny letrehoz egy gombot ami letolti a fajlt 
+        return() => {//Letrehozzuk a fuggvenyt parameter nelkul
+            const link = document.createElement('a'); //Letrehozzuk a linket ami egy <a> elem
+            const fileContent = this.manager.ExportContentGenerate(); //Meghivjuk a manager ExportContentGenerate fuggvenyet ami visszaadja a fajl tartalmat
+            const fajl = new Blob([fileContent]); //Letrehozunk egy Blob objektumot a fajl tartalmaval
+            link.href = URL.createObjectURL(fajl); //Letrehozzuk a fajl URL-jet
+            link.download = 'newdata.csv'; //Beallitjuk a letoltesi nevet
+            link.click(); //Ramegyunk a linkre
+            URL.revokeObjectURL(link.href);//Eltavolitjuk a letrehozott URL-t
+        }   
+    }
+    /**
+     * Ez a fuggveny egy eventListener ami a fileBemenethez van hozzaadva es feldolgozza a feltoltott fajlt
+     * @returns {Function} Visszater egy fuggvennyel ami feldolgozza a feltoltott fajlt
+     */
+    #feltoltesEventListener(){ //Ez a fuggveny letrehoz egy gombot ami feltolti a fajlt 
+        return (e) => { //Letrehozzuk a fuggvenyt parameter nelkul 
             const fajl = e.target.files[0]; //Kivalasztjuk az elso file-t
             const fileReader = new FileReader(); //Letrehozzuk a fileReader objektumot
             fileReader.onload = () => { //Akkor kezdodik el ha betoltodott a fajl
@@ -199,20 +304,7 @@ class UploadDownload extends Area{
                 }
             }
             fileReader.readAsText(fajl); //Beolvassuk a fajlt szovegkent
-        })
-        const exportGomb = document.createElement('button') //Letrehozzuk az exportGombot ami a letoltesnek a gombja 
-        exportGomb.textContent = 'Letoltes'; //Beallitjuk a gomb szoveget
-        this.div.appendChild(exportGomb)// Hozzaadjuk a divhez az exportGombot
-        exportGomb.addEventListener('click', () => {  //Hozzaadunk egy esemenyfigyelot az exportGombhoz 
-            const link = document.createElement('a'); //Letrehozzuk a linket ami egy <a> elem
-            const fileContent = this.manager.ExportContentGenerate(); //Meghivjuk a manager ExportContentGenerate fuggvenyet ami visszaadja a fajl tartalmat
-            const fajl = new Blob([fileContent]); //Letrehozunk egy Blob objektumot a fajl tartalmaval
-            link.href = URL.createObjectURL(fajl); //Letrehozzuk a fajl URL-jet
-            link.download = 'newdata.csv'; //Beallitjuk a letoltesi nevet
-            link.click(); //Ramegyunk a linkre
-            URL.revokeObjectURL(link.href);//Eltavolitjuk a letrehozott URL-t
-        })
-
+        }
     }
 }
 

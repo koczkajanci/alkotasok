@@ -1,5 +1,6 @@
 /**
- * 
+ * Ez az osztaly az Area osztalybo szarmazik es a meglevo adatokat kepes szurni egy urlap segitsegevel
+ * Az urlapba van egy legordulo lista es egy input mező
  */
 class Filter extends Area{ //Az osztaly letrehozasa ami az Area osztalybol szarmazik
     /**
@@ -22,7 +23,7 @@ class Filter extends Area{ //Az osztaly letrehozasa ami az Area osztalybol szarm
                 innerText: '' //A szoveg ures
             },
             {
-                value: 'writer', // //A value a writer
+                value: 'writer', //A value a writer
                 innerText: 'Szerzo' //A szoveg Szerzo
             },
             {
@@ -72,7 +73,7 @@ class Filter extends Area{ //Az osztaly letrehozasa ami az Area osztalybol szarm
                     if(filterInput.value === elem.title){ //Akkor lep bele az ifbe ha a filterInput erteke egyenlo az elem title propertyjaval
                         return true;//Visszater trueval
                     }
-                }else{ ////Ha egyik feltetel sem teljesul
+                }else{ //Ha egyik feltetel sem teljesul
                     return true; //Akkor is igazzal ter vissza
                 }
             })
